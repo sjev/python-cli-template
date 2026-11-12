@@ -1,0 +1,70 @@
+[project]
+name = "{{ cookiecutter.project_slug }}"
+dynamic = ["version"]
+description = "{{ cookiecutter.description }}"
+readme = "README.md"
+authors = [
+    { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }
+]
+requires-python = ">=3.12"
+{%- if cookiecutter.project_type == "cli" %}
+dependencies = [
+    "typer>=0.12",
+]
+{%- else %}
+dependencies = []  # stdlib-only skeleton; add email/poller libs as needed
+{%- endif %}
+
+[project.scripts]
+{%- if cookiecutter.project_type == "cli" %}
+{{ cookiecutter.project_slug }} = "{{ cookiecutter.package_name }}.cli:app"
+{%- else %}
+{{ cookiecutter.project_slug }} = "{{ cookiecutter.package_name }}.service:main"
+{%- endif %}
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[dependency-groups]
+dev = [
+    "invoke>=2.2.0",
+    "mypy>=1.10",
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+extend-select = ["B", "I", "C4", "TID", "SIM", "PLE", "RUF"]
+ignore = [
+    "D100", "D101", "D102", "D103",  # Missing docstrings
+    "N806", "N803",  # Invalid name patterns
+    "G201",  # Logging f-string interpolation
+    "ARG001",  # Unused function argument
+    "BLE001",  # Blind except
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001"]  # Allow unused arguments in tests
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ cookiecutter.package_name }}"]

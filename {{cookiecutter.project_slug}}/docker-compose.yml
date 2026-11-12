@@ -1,0 +1,9 @@
+services:
+  {{ cookiecutter.project_slug }}:
+    image: {{ cookiecutter.project_slug }}:latest  # `inv deploy` rewrites the tag
+    container_name: {{ cookiecutter.project_slug }}
+    env_file: .env
+    user: "1000:1000"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
